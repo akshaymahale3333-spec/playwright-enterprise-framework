@@ -1,17 +1,31 @@
 const { test, expect } = require('@playwright/test');
 const LoginPage = require('../../pages/LoginPage');
+const users = require('../../fixtures/users.json');
 
-test('Valid Login', async ({ page }) => {
+let loginPage;
 
-    const loginPage = new LoginPage(page);
-
+test.beforeEach(async ({ page }) => {
+    loginPage = new LoginPage(page);
     await loginPage.navigate();
+});
+
+test('Valid Login', async () => {
 
     await loginPage.login(
-        'standard_user',
-        'secret_sauce'
+        users.standardUser.username,
+        users.standardUser.password
     );
 
-    await expect(page).toHaveURL(/inventory/);
+    await expect(loginPage.page).toHaveURL(/inventory/);
+});
 
+test('Locked User Login', async () => {
+
+    await loginPage.login(
+        users.lockedUser.username,
+        users.lockedUser.password
+    );
+
+    await expect(loginPage.page.locator('[data-test="error"]'))
+        .toContainText('Sorry, this user has been locked out.');
 });
