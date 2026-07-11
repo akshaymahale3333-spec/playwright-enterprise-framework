@@ -29,3 +29,14 @@ test('Locked User Login', async () => {
     await expect(loginPage.page.locator('[data-test="error"]'))
         .toContainText('Sorry, this user has been locked out.');
 });
+
+test('Invalid Login', async () => {
+
+    await loginPage.login(
+        users.invalidUser.username,
+        users.invalidUser.password
+    );
+
+    await expect(loginPage.page.locator('[data-test="error"]'))
+        .toContainText('Username and password do not match any user in this service');
+})
